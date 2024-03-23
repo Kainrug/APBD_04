@@ -6,21 +6,19 @@ namespace LegacyApp
     {
         public bool AddUser(string firstName, string lastName, string email, DateTime dateOfBirth, int clientId)
         {
-            if (string.IsNullOrEmpty(firstName) || string.IsNullOrEmpty(lastName))
+            if (IsFirstNameCorrect(firstName) || IsLastNameCorrect(lastName))
             {
                 return false;
             }
 
-            if (!email.Contains("@") && !email.Contains("."))
+            if (IsUserEmailCorrect(email))
             {
                 return false;
             }
 
-            var now = DateTime.Now;
-            int age = now.Year - dateOfBirth.Year;
-            if (now.Month < dateOfBirth.Month || (now.Month == dateOfBirth.Month && now.Day < dateOfBirth.Day)) age--;
+            var age = CalculateAgeUsingBirthdate(dateOfBirth);
 
-            if (age < 21)
+            if (IsAgeCorrect(age))
             {
                 return false;
             }
@@ -67,6 +65,34 @@ namespace LegacyApp
 
             UserDataAccess.AddUser(user);
             return true;
+        }
+
+        private static int CalculateAgeUsingBirthdate(DateTime dateOfBirth)
+        {
+            var now = DateTime.Now;
+            int age = now.Year - dateOfBirth.Year;
+            if (now.Month < dateOfBirth.Month || (now.Month == dateOfBirth.Month && now.Day < dateOfBirth.Day)) age--;
+            return age;
+        }
+
+        private static bool IsAgeCorrect(int age)
+        {
+            return age < 21;
+        }
+
+        private static bool IsUserEmailCorrect(string email)
+        {
+            return !email.Contains("@") && !email.Contains(".");
+        }
+
+        private static bool IsLastNameCorrect(string lastName)
+        {
+            return string.IsNullOrEmpty(lastName);
+        }
+
+        private static bool IsFirstNameCorrect(string firstName)
+        {
+            return string.IsNullOrEmpty(firstName);
         }
     }
 }
