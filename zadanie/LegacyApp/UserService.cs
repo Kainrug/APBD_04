@@ -35,28 +35,7 @@ namespace LegacyApp
                 LastName = lastName
             };
 
-            if (client.Type == "VeryImportantClient")
-            {
-                user.HasCreditLimit = false;
-            }
-            else if (client.Type == "ImportantClient")
-            {
-                using (var userCreditService = new UserCreditService())
-                {
-                    int creditLimit = userCreditService.GetCreditLimit(user.LastName, user.DateOfBirth);
-                    creditLimit = creditLimit * 2;
-                    user.CreditLimit = creditLimit;
-                }
-            }
-            else
-            {
-                user.HasCreditLimit = true;
-                using (var userCreditService = new UserCreditService())
-                {
-                    int creditLimit = userCreditService.GetCreditLimit(user.LastName, user.DateOfBirth);
-                    user.CreditLimit = creditLimit;
-                }
-            }
+            SetCreditLimit(client, user);
 
             if (user.HasCreditLimit && user.CreditLimit < 500)
             {
@@ -65,6 +44,29 @@ namespace LegacyApp
 
             UserDataAccess.AddUser(user);
             return true;
+        }
+
+        private static void SetCreditLimit(Client client, User user)
+        {
+            using (var userCreditService = new UserCreditService())
+            {
+                int creditLimit = userCreditService.GetCreditLimit(user.LastName, user.DateOfBirth);
+
+                if (client.Type == "VeryImportantClient")
+                {
+                    user.HasCreditLimit = false;
+                }
+                else
+                {
+                    user.HasCreditLimit = true;
+                    if (client.Type == "ImportantClient")
+                    {
+                        creditLimit *= 2;
+                    }
+
+                    user.CreditLimit = creditLimit;
+                }
+            }
         }
 
         private static int CalculateAgeUsingBirthdate(DateTime dateOfBirth)
