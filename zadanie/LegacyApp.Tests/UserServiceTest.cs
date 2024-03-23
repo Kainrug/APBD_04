@@ -17,4 +17,18 @@ public class UserServiceTest
         //Assert.Equal(false, addResult);
         Assert.False(addResult);
     }
+    
+    [Fact]
+    public void AddUser_ValidData_ReturnsTrue()
+    {
+        // Arrange
+        var userService = new UserService();
+        // Mock ClientRepository and UserCreditService as needed
+        
+        // Act
+        var result = userService.AddUser("John", "Doe", "john@example.com", new DateTime(1990, 1, 1), 1);
+
+        // Assert
+        Assert.True(result);
+    }
 }
